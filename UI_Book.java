@@ -1,7 +1,6 @@
 package quanLiSach;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,9 +10,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
-//import java.text.NumberFormat;
-//import java.util.Iterator;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -27,10 +23,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListener {
-	/**
-	 * 
-	 */
+public class UI_Book extends JFrame implements ActionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private JTextField txtID;
 	private JTextField txtName;
@@ -50,13 +43,13 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			"Nhà xuất bản", "Đơn giá" };
 	private DefaultTableModel tableModel;
 	private JTable table;
-	private JComboBox<String> timKiemComboBox;
+	private JComboBox<String> searchComboBox;
 
-	private DanhSachSach danhSachSach;
-	private static final String FILENAME = "data/danhSachSach.txt";
-	private boolean trangThaiLuu = true;
+	private ListBook listBook;
+	private static final String FILENAME = "data/listBook.txt";
+	private boolean storageStatus = true;
 
-	public UI_QuanLiSach() {
+	public UI_Book() {
 		setTitle("Quản lí sách");
 		setSize(1000, 650);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -64,7 +57,7 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			@Override
 			public void windowClosing(WindowEvent e) {
 
-				if (trangThaiLuu == false) {
+				if (storageStatus == false) {
 					int x = JOptionPane.showConfirmDialog(null, "Bạn có muốn lưu trước khi thoát?", "Cảnh báo",
 							JOptionPane.YES_NO_OPTION);
 					if (x == JOptionPane.YES_OPTION) {
@@ -81,7 +74,7 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 
-		danhSachSach = new DanhSachSach();
+		listBook = new ListBook();
 
 		tableModel = new DefaultTableModel(titleString, 0);
 		table = new JTable(tableModel);
@@ -93,13 +86,9 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		inputJPanel.setBorder(BorderFactory.createTitledBorder("Records Editor"));
 		inputJPanel.setPreferredSize(new Dimension(getWidth(), 180));
 
-//		inputJPanel.setBackground(Color.yellow);
-
 		// left
 		JPanel leftInputJPanel = new JPanel();
 		leftInputJPanel.setPreferredSize(new Dimension(460, 150));
-
-//		leftInputJPanel.setBackground(Color.red);
 
 		Box leftBox = Box.createVerticalBox();
 
@@ -191,12 +180,10 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		/* End: inputPanel */
 
 		JPanel centerJPanel = new JPanel(new BorderLayout());
-//		centerJPanel.setBackground(Color.green);
 
 		/* Begin: buttonPanel */
 		buttonJPanel = new JPanel();
 		buttonJPanel.setPreferredSize(new Dimension(getWidth(), 50));
-//		buttonJPanel.setBackground(Color.cyan);
 
 		btnAdd = new JButton("Thêm");
 		btnClear = new JButton("Xóa rỗng");
@@ -219,12 +206,12 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		timKiemJLabel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
 		buttonJPanel.add(timKiemJLabel);
 
-		timKiemComboBox = new JComboBox<String>();
-		timKiemComboBox.addItem("");
-		timKiemComboBox.addActionListener(this);
-		timKiemComboBox.setEditable(true);
+		searchComboBox = new JComboBox<String>();
+		searchComboBox.addItem("");
+		searchComboBox.addActionListener(this);
+		searchComboBox.setEditable(true);
 
-		buttonJPanel.add(timKiemComboBox);
+		buttonJPanel.add(searchComboBox);
 
 		centerJPanel.add(buttonJPanel, BorderLayout.NORTH);
 		/* End: buttonPanel */
@@ -233,42 +220,36 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		JPanel viewJPanel = new JPanel(new BorderLayout());
 		viewJPanel.setBorder(BorderFactory.createTitledBorder("Danh sách cuốn sách"));
 
-//		tableModel = new DefaultTableModel(titleString, 0);
-//		table = new JTable(tableModel);
-//		table.setRowHeight(40);
-
 		viewJPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
 		centerJPanel.add(viewJPanel, BorderLayout.CENTER);
 		/* End: viewPanel */
 		this.add(centerJPanel, BorderLayout.CENTER);
 
-		LuuTru luuTru = new LuuTru();
+		Storage storage = new Storage();
 
 		try {
-			danhSachSach = (DanhSachSach) luuTru.DocFile(FILENAME);
-			for (int i = 0; i < danhSachSach.getSize(); i++) {
-				Sach s = danhSachSach.getElement(i);
-
-				tableModel.addRow(new Object[] { s.getId(), s.getName(), s.getPublishYear(), s.getPageNumber(),
-						s.getISBN(), s.getAuthor(), s.getPublisher(), s.getPrice() });
+			listBook = (ListBook) storage.ReadFile(FILENAME);
+			for (int i = 0; i < listBook.getSize(); i++) {
+				Book book = listBook.getElement(i);
+				
+				DecimalFormat df=new DecimalFormat("#,##0");
+				tableModel.addRow(new Object[] { book.getId(), book.getName(), book.getPublishYear(), book.getPageNumber(),
+						book.getISBN(), book.getAuthor(), book.getPublisher(), df.format(book.getPrice()) });
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 
-		for (int i = 0; i < danhSachSach.getSize(); i++) {
-//			System.out.println(danhSachSach.getElement(i));
-//			System.out.println("hung");
-			Sach s = danhSachSach.getElement(i);
-//			System.out.println(s.getId());
-			timKiemComboBox.addItem(s.getId());
+		for (int i = 0; i < listBook.getSize(); i++) {
+			Book s = listBook.getElement(i);
+			searchComboBox.addItem(s.getId());
 		}
 
 	}
 
 	public static void main(String[] args) {
-		new UI_QuanLiSach().setVisible(true);
+		new UI_Book().setVisible(true);
 	}
 
 	/*
@@ -323,8 +304,8 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 	public boolean checkNumber() {
 
 		try {
-			int namXuatBan = Integer.parseInt(txtPublishYear.getText());
-			if (namXuatBan < 1900 || namXuatBan > 2100) {
+			int year = Integer.parseInt(txtPublishYear.getText());
+			if (year < 1900 || year > 2100) {
 				JOptionPane.showMessageDialog(this, "Nhập năm xuất bản không đúng.");
 				txtPublishYear.selectAll();
 				txtPublishYear.requestFocus();
@@ -338,8 +319,8 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		}
 
 		try {
-			int soTrang = Integer.parseInt(txtPageNumber.getText());
-			if (soTrang < 1) {
+			int pageNumber = Integer.parseInt(txtPageNumber.getText());
+			if (pageNumber < 1) {
 				JOptionPane.showMessageDialog(this, "Số trang phải lớn hơn 0.");
 				txtPageNumber.selectAll();
 				txtPageNumber.requestFocus();
@@ -353,8 +334,8 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		}
 
 		try {
-			double donGia = Double.parseDouble(txtPrice.getText());
-			if (donGia < 1) {
+			double price = Double.parseDouble(txtPrice.getText());
+			if (price < 1) {
 				JOptionPane.showMessageDialog(this, "Đơn giá phải lớn hơn 0.");
 				txtPrice.selectAll();
 				txtPrice.requestFocus();
@@ -371,10 +352,10 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 	}
 
 	public void LuuVaoFile() {
-		LuuTru luuTru = new LuuTru();
+		Storage luuTru = new Storage();
 
 		try {
-			luuTru.LuuFIle(danhSachSach, FILENAME);
+			luuTru.SaveFile(listBook, FILENAME);
 			JOptionPane.showMessageDialog(this, "Lưu thành công.");
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Lưu không thành công.");
@@ -382,7 +363,7 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		}
 	}
 
-	public void focus() {
+	public void Focus() {
 		txtID.selectAll();
 		txtName.selectAll();
 		txtPublishYear.selectAll();
@@ -391,11 +372,10 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		txtAuthor.selectAll();
 		txtPublisher.selectAll();
 		txtPrice.selectAll();
-
 		txtID.requestFocus();
 	}
 	
-	public void XoaRong() {
+	public void ClearTextField() {
 		txtID.setText("");
 		txtName.setText("");
 		txtPublishYear.setText("");
@@ -426,27 +406,27 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			int pageNumber = Integer.parseInt(txtPageNumber.getText().trim());
 			double price = Double.parseDouble(txtPrice.getText().trim());
 
-			Sach sach = new Sach(txtID.getText().trim(), txtName.getText().trim(), publishYear, pageNumber,
+			Book book = new Book(txtID.getText().trim(), txtName.getText().trim(), publishYear, pageNumber,
 					txtISBN.getText().trim(), txtAuthor.getText().trim(), txtPublisher.getText().trim(), price);
 
-			if (!danhSachSach.themSach(sach)) {
+			if (!listBook.addBook(book)) {
 				JOptionPane.showMessageDialog(this, "Thêm thất bại. Có thể trùng mã sách.");
 				txtID.selectAll();
 				txtID.requestFocus();
 				return;
 			}
-
+			
 			tableModel.addRow(new Object[] { txtID.getText(), txtName.getText(), txtPublishYear.getText(),
 					txtPageNumber.getText(), txtISBN.getText(), txtAuthor.getText(), txtPublisher.getText(),
-					txtPrice.getText() });
+					txtPrice.getText()});
 
-			focus();
-			trangThaiLuu = false;
+			Focus();
+			storageStatus = false;
 		}
 
 		// xóa rỗng
 		if (object.equals(btnClear)) {
-			XoaRong();
+			ClearTextField();
 		}
 
 		// sửa
@@ -454,10 +434,10 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			int publishYear = Integer.parseInt(txtPublishYear.getText().trim());
 			int pageNumber = Integer.parseInt(txtPageNumber.getText().trim());
 			double price = Double.parseDouble(txtPrice.getText().trim());
-
-			Sach sach = new Sach(txtID.getText().trim(), txtName.getText().trim(), publishYear, pageNumber,
+			
+			Book sach = new Book(txtID.getText().trim(), txtName.getText().trim(), publishYear, pageNumber,
 					txtISBN.getText().trim(), txtAuthor.getText().trim(), txtPublisher.getText().trim(), price);
-			boolean x = danhSachSach.capNhatSach(sach, (String) table.getValueAt(table.getSelectedRow(), 0));
+			boolean x = listBook.updateBook(sach, (String) table.getValueAt(table.getSelectedRow(), 0));
 			if (x == false) {
 				JOptionPane.showMessageDialog(this, "Không sửa được.");
 				return;
@@ -470,8 +450,8 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			table.setValueAt(txtPublisher.getText(), table.getSelectedRow(), 6);
 			table.setValueAt(txtPrice.getText(), table.getSelectedRow(), 7);
 
-			focus();
-			trangThaiLuu = false;
+			Focus();
+			storageStatus = false;
 		}
 
 		// xóa
@@ -480,13 +460,13 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 					JOptionPane.YES_NO_OPTION);
 
 			if (x == JOptionPane.YES_OPTION) {
-				Sach sach = danhSachSach.getElement(table.getSelectedRow());
-				if (danhSachSach.xoaSach(sach)) {
-					timKiemComboBox.removeItem(sach.getId()); //xóa mã trong ô tìm kiếm
+				Book book = listBook.getElement(table.getSelectedRow());
+				if (listBook.xoaSach(book)) {
+					searchComboBox.removeItem(book.getId()); //xóa mã trong ô tìm kiếm
 					
 					tableModel.removeRow(table.getSelectedRow()); //xóa dòng đang chọn
-					trangThaiLuu = false;
-					XoaRong();
+					storageStatus = false;
+					ClearTextField();
 					
 				} else {
 					JOptionPane.showMessageDialog(this, "Xóa lỗi.");
@@ -495,12 +475,12 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		}
 
 		// tìm kiếm
-		String maTimKiem = (String) timKiemComboBox.getSelectedItem();
+		String idSearch = (String) searchComboBox.getSelectedItem();
 
-		if (!maTimKiem.equals("")) {
-			Sach s = danhSachSach.timKiemSach(maTimKiem);
+		if (!idSearch.equals("")) {
+			Book b = listBook.searchBook(idSearch);
 
-			if (s == null) {
+			if (b == null) {
 				JOptionPane.showMessageDialog(this, "Không tìm thấy mã sách này.");
 				return;
 			}
@@ -508,11 +488,11 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 			DecimalFormat df = new DecimalFormat("#,##0");
 			String string = String.format(
 					" Mã: %s\n Tựa sách: %s\n Năm xuất bản: %d\n Số trang: %d\n ISBN: %s\n Tác giả: %s\n Nhà xuất bản: %s\n Đơn giá: %s",
-					s.getId(), s.getName(), s.getPublishYear(), s.getPageNumber(), s.getISBN(), s.getAuthor(),
-					s.getPublisher(), df.format(s.getPrice()));
+					b.getId(), b.getName(), b.getPublishYear(), b.getPageNumber(), b.getISBN(), b.getAuthor(),
+					b.getPublisher(), df.format(b.getPrice()));
 
 			JOptionPane.showMessageDialog(this, string);
-			timKiemComboBox.setSelectedIndex(0);
+			searchComboBox.setSelectedIndex(0);
 		}
 	}
 
@@ -534,25 +514,17 @@ public class UI_QuanLiSach extends JFrame implements ActionListener, MouseListen
 		txtPrice.setText(table.getValueAt(row, 7).toString());
 		txtName.requestFocus();
 	}
-
 	@Override
 	public void mousePressed(MouseEvent e) {
-
 	}
-
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
 	}
-
 	@Override
 	public void mouseEntered(MouseEvent e) {
-
 	}
-
 	@Override
 	public void mouseExited(MouseEvent e) {
-
 	}
 
 }

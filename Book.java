@@ -3,7 +3,7 @@ package quanLiSach;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Sach implements Serializable{
+public class Book implements Serializable{
 	/**
 	 * 
 	 */
@@ -64,15 +64,15 @@ public class Sach implements Serializable{
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public Sach() {
+	public Book() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Sach(String id) {
+	public Book(String id) {
 		setId(id);
 	}
 	
-	public Sach(String id, String name, int publishYear, int pageNumber, String iSBN, String author, String publisher,
+	public Book(String id, String name, int publishYear, int pageNumber, String iSBN, String author, String publisher,
 			double price) {
 		setId(id);
 		setName(name);
@@ -98,7 +98,7 @@ public class Sach implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Sach other = (Sach) obj;
+		Book other = (Book) obj;
 		return Objects.equals(id, other.id);
 	}
 	
