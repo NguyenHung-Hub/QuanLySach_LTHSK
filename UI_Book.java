@@ -61,7 +61,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 					int x = JOptionPane.showConfirmDialog(null, "Bạn có muốn lưu trước khi thoát?", "Cảnh báo",
 							JOptionPane.YES_NO_OPTION);
 					if (x == JOptionPane.YES_OPTION) {
-						LuuVaoFile();
+						luuVaoFile();
 						System.exit(0);
 					} else {
 						System.exit(0);
@@ -351,7 +351,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		return true;
 	}
 
-	public void LuuVaoFile() {
+	public void luuVaoFile() {
 		Storage luuTru = new Storage();
 
 		try {
@@ -363,7 +363,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		}
 	}
 
-	public void Focus() {
+	public void focus() {
 		txtID.selectAll();
 		txtName.selectAll();
 		txtPublishYear.selectAll();
@@ -420,7 +420,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 					txtPageNumber.getText(), txtISBN.getText(), txtAuthor.getText(), txtPublisher.getText(),
 					txtPrice.getText()});
 
-			Focus();
+			focus();
 			storageStatus = false;
 		}
 
@@ -450,7 +450,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			table.setValueAt(txtPublisher.getText(), table.getSelectedRow(), 6);
 			table.setValueAt(txtPrice.getText(), table.getSelectedRow(), 7);
 
-			Focus();
+			focus();
 			storageStatus = false;
 		}
 
