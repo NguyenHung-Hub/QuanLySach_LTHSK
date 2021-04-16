@@ -49,11 +49,13 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 	private ListBook listBook;
 	private static final String FILENAME = "data/listBook.txt";
 	private boolean storageStatus = true;
-
+	private DecimalFormat df = new DecimalFormat("#,##0");
+	
 	public UI_Book() {
 		setTitle("Quản lí sách");
 		setSize(1000, 650);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -86,10 +88,12 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		JPanel inputJPanel = new JPanel();
 		inputJPanel.setBorder(BorderFactory.createTitledBorder("Records Editor"));
 		inputJPanel.setPreferredSize(new Dimension(getWidth(), 180));
+		inputJPanel.setBackground(Color.yellow);
 
 		// left
 		JPanel leftInputJPanel = new JPanel();
 		leftInputJPanel.setPreferredSize(new Dimension(490, 150));
+		leftInputJPanel.setBackground(Color.gray);
 		Box leftBox = Box.createVerticalBox();
 
 		// Mã sách
@@ -184,6 +188,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		/* Begin: buttonPanel */
 		buttonJPanel = new JPanel();
 		buttonJPanel.setPreferredSize(new Dimension(getWidth(), 50));
+		buttonJPanel.setBackground(Color.green);
 
 		btnAdd = new JButton("Thêm");
 		btnClear = new JButton("Xóa rỗng");
@@ -233,7 +238,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			for (int i = 0; i < listBook.getSize(); i++) {
 				Book book = listBook.getElement(i);
 				
-				DecimalFormat df=new DecimalFormat("#,##0");
+//				DecimalFormat df=new DecimalFormat("#,##0");
 				tableModel.addRow(new Object[] { book.getId(), book.getName(), book.getPublishYear(), book.getPageNumber(),
 						book.getISBN(), book.getAuthor(), book.getPublisher(), df.format(book.getPrice()) });
 			}
@@ -418,12 +423,13 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			
 			tableModel.addRow(new Object[] { txtID.getText(), txtName.getText(), txtPublishYear.getText(),
 					txtPageNumber.getText(), txtISBN.getText(), txtAuthor.getText(), txtPublisher.getText(),
-					txtPrice.getText()});
+					df.format(txtPrice.getText())});
 			
-			for (int i = 0; i < listBook.getSize(); i++) {
-				Book s = listBook.getElement(i);
-				searchComboBox.addItem(s.getId());
-			}
+//			for (int i = 0; i < listBook.getSize(); i++) {
+//				Book s = listBook.getElement(i);
+//				searchComboBox.addItem(s.getId());
+//			}
+			searchComboBox.addItem(txtID.getText().trim());
 			
 			focus();
 			storageStatus = false;
@@ -443,6 +449,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			Book sach = new Book(txtID.getText().trim(), txtName.getText().trim(), publishYear, pageNumber,
 					txtISBN.getText().trim(), txtAuthor.getText().trim(), txtPublisher.getText().trim(), price);
 			boolean x = listBook.updateBook(sach, (String) table.getValueAt(table.getSelectedRow(), 0));
+			
 			if (x == false) {
 				JOptionPane.showMessageDialog(this, "Không sửa được.");
 				return;
@@ -453,7 +460,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			table.setValueAt(txtISBN.getText(), table.getSelectedRow(), 4);
 			table.setValueAt(txtAuthor.getText(), table.getSelectedRow(), 5);
 			table.setValueAt(txtPublisher.getText(), table.getSelectedRow(), 6);
-			table.setValueAt(txtPrice.getText(), table.getSelectedRow(), 7);
+			table.setValueAt(df.format(txtPrice.getText()), table.getSelectedRow(), 7);
 
 			focus();
 			storageStatus = false;
@@ -490,7 +497,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 				return;
 			}
 
-			DecimalFormat df = new DecimalFormat("#,##0");
+//			DecimalFormat df = new DecimalFormat("#,##0");
 			String string = String.format(
 					" Mã: %s\n Tựa sách: %s\n Năm xuất bản: %d\n Số trang: %d\n ISBN: %s\n Tác giả: %s\n Nhà xuất bản: %s\n Đơn giá: %s",
 					b.getId(), b.getName(), b.getPublishYear(), b.getPageNumber(), b.getISBN(), b.getAuthor(),
@@ -516,7 +523,19 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		txtISBN.setText(table.getValueAt(row, 4).toString());
 		txtAuthor.setText(table.getValueAt(row, 5).toString());
 		txtPublisher.setText(table.getValueAt(row, 6).toString());
-		txtPrice.setText(table.getValueAt(row, 7).toString());
+		
+//		DecimalFormat df = new DecimalFormat("#");
+//		txtPrice.setText(df.format(Float.parseFloat(table.getValueAt(row, 7).toString())));
+		
+		String price = table.getValueAt(row, 7).toString();
+		String s = "";
+		
+		for (int i = 0; i < price.length(); i++) 
+			if (price.charAt(i) != ',') 
+				s += price.charAt(i);
+		txtPrice.setText(s);
+		
+//		System.out.println(s);
 		txtName.requestFocus();
 	}
 	@Override
