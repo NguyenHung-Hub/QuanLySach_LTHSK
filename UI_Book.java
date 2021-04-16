@@ -460,7 +460,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			table.setValueAt(txtISBN.getText(), table.getSelectedRow(), 4);
 			table.setValueAt(txtAuthor.getText(), table.getSelectedRow(), 5);
 			table.setValueAt(txtPublisher.getText(), table.getSelectedRow(), 6);
-			table.setValueAt(df.format(txtPrice.getText()), table.getSelectedRow(), 7);
+			table.setValueAt(df.format(Double.parseDouble(txtPrice.getText())), table.getSelectedRow(), 7);
 
 			focus();
 			storageStatus = false;
@@ -533,6 +533,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		for (int i = 0; i < price.length(); i++) 
 			if (price.charAt(i) != ',') 
 				s += price.charAt(i);
+		
 		txtPrice.setText(s);
 		
 //		System.out.println(s);
