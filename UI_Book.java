@@ -1,6 +1,7 @@
 package quanLiSach;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,7 +76,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 		setLayout(new BorderLayout());
 
 		listBook = new ListBook();
-
+		
 		tableModel = new DefaultTableModel(titleString, 0);
 		table = new JTable(tableModel);
 		table.setRowHeight(40);
@@ -88,8 +89,7 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 
 		// left
 		JPanel leftInputJPanel = new JPanel();
-		leftInputJPanel.setPreferredSize(new Dimension(460, 150));
-
+		leftInputJPanel.setPreferredSize(new Dimension(490, 150));
 		Box leftBox = Box.createVerticalBox();
 
 		// Mã sách
@@ -419,7 +419,12 @@ public class UI_Book extends JFrame implements ActionListener, MouseListener {
 			tableModel.addRow(new Object[] { txtID.getText(), txtName.getText(), txtPublishYear.getText(),
 					txtPageNumber.getText(), txtISBN.getText(), txtAuthor.getText(), txtPublisher.getText(),
 					txtPrice.getText()});
-
+			
+			for (int i = 0; i < listBook.getSize(); i++) {
+				Book s = listBook.getElement(i);
+				searchComboBox.addItem(s.getId());
+			}
+			
 			focus();
 			storageStatus = false;
 		}
